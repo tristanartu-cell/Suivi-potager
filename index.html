@@ -4,8 +4,204 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Suivi Potager</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background-color: #fff;
+      padding: 1.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ===== NAVIGATION ===== */
+    .nav {
+      background-color: #fff;
+      padding: 0.5rem 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav button {
+      background: none;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #555;
+      transition: all 0.2s;
+    }
+
+    .nav button:hover {
+      background-color: #f1f1f1;
+    }
+
+    .nav button.active {
+      background-color: #e3f2fd;
+      color: #1976d2;
+      font-weight: bold;
+    }
+
+    .nav button span {
+      margin-right: 0.5rem;
+    }
+
+    /* ===== SECTIONS ===== */
+    .screen {
+      display: none;
+      padding: 1.5rem;
+      animation: fadeIn 0.3s;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+
+    /* ===== PARCELLE ===== */
+    #screen-parcelle .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    #addBedBtn {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #addBedBtn:hover {
+      background-color: #3e8e41;
+    }
+
+    .plot {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .bed {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .bed-header {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+
+    /* ===== JOURNAL ===== */
+    #screen-journal .journal-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .parcel-preview {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .parcel-preview h2 {
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .bed-preview {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+
+    .bed-preview:last-child {
+      margin-bottom: 0;
+    }
+
+    .work-selector {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    select, button {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0b7dda;
+    }
+
+    /* ===== PLANNING & RECOLTES ===== */
+    #screen-planning, #screen-recoltes, #screen-rotation {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      .nav button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -21,86 +217,112 @@
   </nav>
 
   <main>
-    <!-- ===== ONGLET PARCELLE (modifié) ===== -->
+    <!-- ===== ONGLET PARCELLE ===== -->
     <section id="screen-parcelle" class="screen active">
       <div class="section-head">
-        <div>
-          <h1 class="section-title">La parcelle</h1>
-        </div>
+        <h1 class="section-title">La parcelle</h1>
         <button class="primary" id="addBedBtn">＋ Ajouter une culture</button>
       </div>
-      <div class="stats" id="plotStats"></div>
-      <div class="legend" id="legend"></div>
-      <div class="plot" id="plot">
-        <!-- Les planches seront générées dynamiquement ici -->
-        <div class="bed" style="background: white;">
+      <div class="plot">
+        <div class="bed">
           <div class="bed-header">Planches 1</div>
           <div class="bed-content">...</div>
         </div>
-        <div class="bed" style="background: white;">
+        <div class="bed">
           <div class="bed-header">Planches 2</div>
           <div class="bed-content">...</div>
         </div>
-        <!-- Ajoute autant de planches que nécessaire -->
       </div>
     </section>
 
-    <!-- ===== ONGLET JOURNAL (modifié) ===== -->
+    <!-- ===== ONGLET JOURNAL ===== -->
     <section id="screen-journal" class="screen">
-      <div class="section-head">
-        <h1 class="section-title">Journal de bord</h1>
-      </div>
+      <h1 class="section-title">Journal de bord</h1>
       <div class="journal-content">
-        <!-- Affichage de la parcelle (simulé) -->
         <div class="parcel-preview">
           <h2>Parcelle actuelle</h2>
           <div class="bed-preview">
-            <div class="bed-header">Planche 1</div>
-            <div class="bed-content">
-              <p>Carottes (Semis)</p>
-            </div>
+            <strong>Planche 1</strong><br>
+            Carottes (Semis)
           </div>
-        </div>
-
-        <!-- Bandeau déroulant pour le travail effectué -->
-        <div class="work-log">
-          <h3>Travail effectué sur la planche</h3>
-          <select id="workType">
-            <option value="">-- Sélectionnez un travail --</option>
-            <option value="couvert-vegetal">Couvert végétal</option>
-            <option value="broyage">Broyage</option>
-            <option value="motoculteur">Motoculteur</option>
-            <option value="bache">Bâche</option>
-            <option value="arrosage">Arrosage</option>
-            <option value="plantation">Plantation</option>
-            <option value="semis">Semis</option>
-            <option value="desherbage">Désherbage</option>
-            <option value="preparation-sol">Préparation sol</option>
-            <option value="fumier">Fumier</option>
-            <option value="grelinette">Grelinette</option>
-          </select>
-          <button id="addWorkBtn">Ajouter</button>
+          <div class="work-selector">
+            <select id="workType">
+              <option value="">-- Sélectionnez un travail --</option>
+              <option value="couvert-vegetal">Couvert végétal</option>
+              <option value="broyage">Broyage</option>
+              <option value="motoculteur">Motoculteur</option>
+              <option value="bache">Bâche</option>
+              <option value="arrosage">Arrosage</option>
+              <option value="plantation">Plantation</option>
+              <option value="semis">Semis</option>
+              <option value="desherbage">Désherbage</option>
+              <option value="preparation-sol">Préparation sol</option>
+              <option value="fumier">Fumier</option>
+              <option value="grelinette">Grelinette</option>
+            </select>
+            <button id="addWorkBtn">Ajouter</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== AUTRES ONGLETS (inchangés) ===== -->
+    <!-- ===== ONGLET PLANNING ===== -->
     <section id="screen-planning" class="screen">
-      <h2>Planning des semis/récoltes</h2>
+      <h1 class="section-title">Planning des semis/récoltes</h1>
       <p>Calendrier des activités.</p>
     </section>
 
+    <!-- ===== ONGLET RECOLTES ===== -->
     <section id="screen-recoltes" class="screen">
-      <h2>Historique des récoltes</h2>
+      <h1 class="section-title">Historique des récoltes</h1>
       <p>Liste des récoltes.</p>
     </section>
 
+    <!-- ===== ONGLET ROTATION ===== -->
     <section id="screen-rotation" class="screen">
-      <h2>Rotation des cultures</h2>
+      <h1 class="section-title">Rotation des cultures</h1>
       <p>Tableau des rotations.</p>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    // Navigation entre onglets
+    document.querySelectorAll('.nav button').forEach(button => {
+      button.addEventListener('click', () => {
+        // Désactiver tous les boutons
+        document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+
+        // Activer le bouton cliqué et son écran associé
+        button.classList.add('active');
+        const screenId = button.getAttribute('data-screen');
+        document.getElementById(`screen-${screenId}`).classList.add('active');
+      });
+    });
+
+    // Ajout de planche (simulation)
+    document.getElementById('addBedBtn').addEventListener('click', () => {
+      const plot = document.querySelector('.plot');
+      const bedCount = plot.children.length + 1;
+      const newBed = document.createElement('div');
+      newBed.className = 'bed';
+      newBed.innerHTML = `
+        <div class="bed-header">Planches ${bedCount}</div>
+        <div class="bed-content">...</div>
+      `;
+      plot.appendChild(newBed);
+    });
+
+    // Ajout de travail (simulation)
+    document.getElementById('addWorkBtn').addEventListener('click', () => {
+      const workType = document.getElementById('workType').value;
+      if (workType) {
+        alert(`Travail "${workType}" ajouté à la planche !`);
+        document.getElementById('workType').value = '';
+      } else {
+        alert('Veuillez sélectionner un type de travail.');
+      }
+    });
+  </script>
 </body>
 </html>

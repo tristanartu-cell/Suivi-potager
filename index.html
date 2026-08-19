@@ -1,71 +1,890 @@
-# Suivi-potager
 <!doctype html>
 <html lang="fr">
 <head>
-<!-- Pour l'icône et le thème -->
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192x192.png">
-<link rel="icon" href="icon-192x192.png" type="image/png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#4CAF50">
-<meta name="description" content="Planificateur de potager : 20 planches, lignes, rotations, récoltes et planning.">
-<title>Mon Potager — mobile</title>
-<style>
-:root{--ink:#173528;--muted:#6d7c6d;--paper:#f6f3e7;--paper2:#fffdf5;--line:#dfe6d6;--green:#23613e;--green2:#a5c77a;--gold:#e8b34d;--red:#c95b45;--soil:#805737;--shadow:0 14px 35px #183b2a12;--radius:18px}
-*{box-sizing:border-box}html{background:#e9eee2}body{margin:0;color:var(--ink);font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;background:var(--paper);min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;color:inherit}.app{max-width:1280px;margin:auto;min-height:100vh;background:var(--paper)}
-.topbar{color:#f8f5e7;background:linear-gradient(120deg,#153b29,#28603d);padding:22px clamp(18px,4vw,48px) 20px;position:relative;overflow:hidden}.topbar:after{content:"✦  ✽  ❋";position:absolute;right:4%;top:-12px;font-size:95px;letter-spacing:10px;opacity:.08;transform:rotate(10deg)}.topbar-inner{position:relative;z-index:1;display:flex;align-items:end;justify-content:space-between;gap:20px}.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:11px;color:#cce1b1;font-weight:800}.brand{font-family:Georgia,serif;font-weight:700;font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;margin:5px 0}.tagline{color:#d5e4cd;font-size:14px}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.icon-btn,.ghost-btn{background:#ffffff18;border:1px solid #ffffff2e;color:white;border-radius:12px;padding:10px 13px;font-weight:700}.icon-btn:hover,.ghost-btn:hover{background:#ffffff2d}
-.nav{display:flex;gap:8px;overflow:auto;padding:12px clamp(12px,3vw,40px);background:var(--paper2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.nav button{white-space:nowrap;background:transparent;padding:10px 13px;border-radius:12px;color:var(--muted);font-weight:800}.nav button.active{background:#e5efdd;color:var(--green)}.nav button span{margin-right:5px}
-main{padding:clamp(18px,4vw,42px) clamp(14px,4vw,48px) 80px}.screen{display:none;animation:up .28s ease}.screen.active{display:block}@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}h1,h2,h3,p{margin-top:0}.section-head{display:flex;justify-content:space-between;align-items:start;gap:20px;margin-bottom:20px}.section-title{font-family:Georgia,serif;font-size:clamp(25px,4vw,36px);margin-bottom:4px;letter-spacing:-.035em}.section-copy{color:var(--muted);margin-bottom:0}.primary{background:var(--green);color:white;border-radius:12px;padding:11px 15px;font-weight:800;box-shadow:0 6px 13px #23613e22}.primary:hover{background:#194c31;transform:translateY(-1px)}.secondary{background:#edf3e9;color:var(--green);border-radius:12px;padding:10px 14px;font-weight:800}.danger{background:#fff0eb;color:#a94335}.empty{padding:35px 20px;text-align:center;color:var(--muted);border:1px dashed #c8d3c2;border-radius:var(--radius);background:#ffffff55}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0 24px}.stat{background:var(--paper2);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}.stat b{font-size:25px;display:block;color:var(--green)}.stat small{color:var(--muted);font-weight:700}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.legend span,.pill{display:inline-flex;align-items:center;gap:5px;border-radius:30px;background:#ffffffaa;border:1px solid var(--line);padding:5px 9px;font-size:11px;font-weight:800}.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
-.plot{display:flex;flex-direction:column;gap:14px;width:100%}.bed{min-height:150px;border-radius:16px;padding:12px;background:linear-gradient(145deg,#986944,#71472c);color:#fff8e9;box-shadow:inset 0 1px #ffffff28,0 7px 15px #4d311f22;position:relative;overflow:hidden;transition:.2s}.bed:hover{transform:translateY(-3px);box-shadow:inset 0 1px #ffffff28,0 11px 20px #4d311f33}.bed:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(170deg,transparent 0 25px,#ffffff0c 26px 27px);pointer-events:none}.bed-top{display:flex;justify-content:space-between;position:relative}.bed-name{font-weight:900}.bed-meta{font-size:11px;opacity:.8}.rows{display:flex;flex-direction:column;gap:5px;margin-top:12px;position:relative}.row-chip{background:#ffffffdc;color:#293c2b;border-radius:8px;padding:6px 7px;font-size:12px;font-weight:800;display:flex;justify-content:space-between;gap:5px}.row-chip i{font-style:normal;color:#6e7b6b;font-size:10px}.bed-empty{font-size:12px;opacity:.7;margin-top:25px;position:relative}.family-solanacees{border-top:5px solid #cf6251}.family-cucurbitacees{border-top:5px solid #e7b64f}.family-fabacees{border-top:5px solid #76a6c9}.family-divers{border-top:5px solid #a7cf76}
-.cards{display:grid;gap:11px}.card{background:var(--paper2);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}.entry{display:flex;align-items:center;gap:12px}.entry-icon{font-size:26px;background:#eff4e9;border-radius:12px;padding:7px}.entry-main{flex:1}.entry-title{font-weight:900}.muted{color:var(--muted);font-size:13px}.entry-actions{display:flex;gap:5px}.small-btn{background:#edf3e9;color:var(--green);border-radius:9px;padding:7px 9px;font-weight:800;font-size:12px}.planning-date{color:#a66d15;font-weight:900}.harvest-total{background:linear-gradient(120deg,#f8e7b8,#fff8df);border-color:#edd594}
-.rotation-table-wrap{overflow:auto;border-radius:var(--radius);border:1px solid var(--line);background:var(--paper2)}table{border-collapse:collapse;width:100%;min-width:700px}th,td{border-bottom:1px solid var(--line);padding:12px 10px;text-align:left;font-size:13px}th{background:#edf3e9;color:var(--green);font-size:11px;text-transform:uppercase;letter-spacing:.08em}tr:last-child td{border-bottom:0}.cell-fam{font-weight:900;white-space:nowrap}.year-picker{margin-bottom:14px}
-.modal-back{display:none;position:fixed;inset:0;background:#17352880;z-index:20;align-items:end;justify-content:center;padding:16px}.modal-back.open{display:flex}.modal{width:min(620px,100%);max-height:min(90vh,760px);overflow:auto;background:var(--paper);border-radius:24px 24px 12px 12px;padding:24px;box-shadow:0 25px 80px #122b1f55}.modal h3{font-family:Georgia,serif;font-size:25px;margin-bottom:18px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:900;color:var(--green)}input,select,textarea{width:100%;border:1px solid #ccd8c6;background:#fffdf8;border-radius:10px;padding:11px;color:var(--ink);outline:0}input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #23613e18}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}.line-editor{display:grid;gap:9px;margin-top:8px}.line-row{display:grid;grid-template-columns:32px 1fr 42px;gap:7px;align-items:center}.line-no{display:grid;place-items:center;color:white;background:var(--green);border-radius:8px;height:38px;font-weight:900}.remove-line{background:#f5e5de;color:#aa4e3c;border-radius:8px;height:38px;font-weight:900}.add-line{margin-top:10px}.toast{position:fixed;z-index:30;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;background:#173528;color:white;padding:12px 16px;border-radius:12px;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:700px){.topbar{padding:18px 14px 16px}.topbar-inner{align-items:start;flex-direction:column}.top-actions{position:static;margin-top:12px}.ghost-btn{min-height:42px;padding:9px 11px}.nav{gap:4px;padding:8px 10px}.nav button{padding:10px 9px;font-size:12px}.nav button span{margin-right:2px}main{padding:18px 12px 72px}.stats{grid-template-columns:repeat(2,1fr);gap:8px;margin:16px 0 18px}.stat{padding:12px 10px;border-radius:14px}.stat b{font-size:22px}.plot{gap:12px}.bed{min-height:0;padding:14px;border-radius:15px}.row-chip{padding:9px;font-size:13px}.section-head{align-items:stretch;flex-direction:column;gap:12px}.section-head .primary{align-self:stretch}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal-back{padding:0}.modal{border-radius:24px 24px 0 0;padding:20px 16px}.modal-actions{position:sticky;bottom:0;background:var(--paper);padding-top:12px}.entry{align-items:flex-start;padding:13px}.entry-actions{margin-left:auto}.small-btn{padding:9px 8px}.rotation-table-wrap{margin-inline:-12px;border-radius:0}.rotation-table-wrap table{min-width:620px}}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mon Potager — mobile</title>
+  <style>
+    :root {
+      --ink: #173528;
+      --muted: #6d7c6d;
+      --paper: #f6f3e7;
+      --paper2: #fffdf5;
+      --line: #dfe6d6;
+      --green: #23613e;
+      --green2: #a5c77a;
+      --gold: #e8b34d;
+      --red: #c95b45;
+      --soil: #805737;
+      --shadow: 0 14px 35px #183b2a12;
+      --radius: 18px
+    }
 
-</style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: #e9eee2;
+      font-size: 16px;
+    }
+
+    body {
+      color: var(--ink);
+      font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+      background: var(--paper);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      border: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--green);
+      color: white;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1a4d32;
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--paper);
+    }
+
+    /* Topbar */
+    .topbar {
+      background: linear-gradient(120deg, #153b29, #28603d);
+      padding: 22px clamp(18px, 4vw, 48px) 20px;
+      position: relative;
+      overflow: hidden;
+      color: #f8f5e7;
+    }
+
+    .topbar:after {
+      content: "✦  ✽  ❋";
+      position: absolute;
+      right: 4%;
+      top: -12px;
+      font-size: 95px;
+      letter-spacing: 10px;
+      opacity: .08;
+      transform: rotate(10deg);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: 11px;
+      color: #cce1b1;
+      font-weight: 800;
+    }
+
+    .brand {
+      font-family: Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(24px, 5vw, 36px);
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .nav button {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .nav button.active {
+      background: var(--green2);
+    }
+
+    /* Main content */
+    main {
+      padding: 20px clamp(18px, 4vw, 48px);
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-family: Georgia, serif;
+      font-size: 22px;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .section-copy {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* Parcelle section */
+    #screen-parcelle {
+      display: none;
+    }
+
+    #screen-parcelle.active {
+      display: block;
+    }
+
+    #addBedBtn {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .plot {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bed {
+      background: var(--paper2);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .bed-title {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .bed-stats {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .bed-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .line:last-child {
+      border-bottom: none;
+    }
+
+    .line-name {
+      font-weight: 500;
+    }
+
+    .line-crop {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .crop-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .stats {
+      background: var(--paper2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-content {
+      background: var(--paper);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-size: 14px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-secondary {
+      background: var(--muted);
+    }
+
+    /* Journal */
+    .journal-entry {
+      background: var(--paper2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .journal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .journal-date {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .journal-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .journal-actions button {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    .journal-content {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Planning */
+    .planning-day {
+      background: var(--paper2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .planning-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .planning-date {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .planning-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .planning-task {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    /* Harvest */
+    .harvest-item {
+      background: var(--paper2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .harvest-info h4 {
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+
+    .harvest-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--green);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 1001;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        width: 100%;
+        margin-top: 12px;
+      }
+
+      .nav button {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
-<body><div class="app">
-<header class="topbar"><div class="topbar-inner"><div><div class="eyebrow">Carnet de culture · mobile</div><div class="brand">🌱 Mon Potager</div><div class="tagline">Ta parcelle, saison après saison.</div></div><div class="top-actions"><button class="ghost-btn" id="exportBtn">↥ Exporter</button><button class="ghost-btn" id="resetBtn">Réinitialiser</button></div></div></header>
-<nav class="nav" aria-label="Navigation principale"><button class="active" data-screen="parcelle"><span>▦</span> Parcelle</button><button data-screen="journal"><span>✎</span> Journal</button><button data-screen="planning"><span>◷</span> Planning</button><button data-screen="recoltes"><span>♨</span> Récoltes</button><button data-screen="rotation"><span>↻</span> Rotation</button></nav>
-<main>
-<section id="screen-parcelle" class="screen active"><div class="section-head"><div><h1 class="section-title">La parcelle</h1><p class="section-copy">20 planches · affichage vertical · 5 lignes par planche. Touchez une planche pour la détailler.</p></div><button class="primary" id="addBedBtn">＋ Ajouter une culture</button></div><div class="stats" id="plotStats"></div><div class="legend" id="legend"></div><div class="plot" id="plot"></div></section>
-<section id="screen-journal" class="screen"><div class="section-head"><div><h1 class="section-title">Journal de bord</h1><p class="section-copy">Gardez la trace de vos semis et plantations.</p></div><button class="primary" id="journalBtn">＋ Nouvelle entrée</button></div><div class="cards" id="journalList"></div></section>
-<section id="screen-planning" class="screen"><div class="section-head"><div><h1 class="section-title">Planning</h1><p class="section-copy">Les prochaines étapes au bon moment.</p></div><button class="primary" id="planningBtn">＋ Planifier</button></div><div class="cards" id="planningList"></div></section>
-<section id="screen-recoltes" class="screen"><div class="section-head"><div><h1 class="section-title">Récoltes</h1><p class="section-copy">Mesurez ce que la parcelle vous a donné.</p></div><button class="primary" id="harvestBtn">＋ Enregistrer</button></div><div class="stats" id="harvestStats"></div><div class="cards" id="harvestList"></div></section>
-<section id="screen-rotation" class="screen"><div class="section-head"><div><h1 class="section-title">Rotation des cultures</h1><p class="section-copy">Une famille différente aide à préserver le sol.</p></div></div><div class="legend" id="rotationLegend"></div><div class="rotation-table-wrap" id="rotationView"></div></section>
-</main></div>
-<div class="modal-back" id="modalBack"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div><div class="toast" id="toast"></div>
-<script>
-'use strict';
-const FAMILIES={solanacees:{label:'Solanacées',color:'#cf6251'},cucurbitacees:{label:'Cucurbitacées',color:'#e7b64f'},fabacees:{label:'Fabacées',color:'#76a6c9'},divers:{label:'Divers',color:'#a7cf76'}};
-const CROPS=[['Tomate','🍅','solanacees'],['Poivron','🫑','solanacees'],['Aubergine','🍆','solanacees'],['Concombre','🥒','cucurbitacees'],['Courgette','🥒','cucurbitacees'],['Melon','🍈','cucurbitacees'],['Haricot','🫘','fabacees'],['Pois','🟢','fabacees'],['Fève','🫛','fabacees'],['Carotte','🥕','divers'],['Salade','🥬','divers'],['Radis','🔴','divers'],['Oignon','🧅','divers'],['Poireau','🥬','divers'],['Fraise','🍓','divers'],['Patate douce','🍠','divers'],['Betterave','🟣','divers'],['Épinard','🌿','divers'],['Chou','🥦','divers'],['Autre','🌱','divers']].map(([name,emoji,family])=>({name,emoji,family}));
-const key='mon-potager-mobile-v3';let state=load();let screen='parcelle';let editingBed=null;
-function blank(){const beds={};for(let i=1;i<=20;i++)beds['P'+String(i).padStart(2,'0')]={family:'divers',length:5,rows:[]};return {beds,journal:[],planning:[],harvest:[]}}
-function load(){try{const x=JSON.parse(localStorage.getItem(key));if(x&&x.beds){Object.values(x.beds).forEach(b=>{if(!FAMILIES[b.family])b.family='divers';(b.rows||[]).forEach(r=>{if(crop(r.crop).family==='divers' && ['Oignon','Poireau'].includes(r.crop))r.family='divers'});});return x;} }catch(e){}return blank()}
-function save(){localStorage.setItem(key,JSON.stringify(state))}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function crop(name){return CROPS.find(c=>c.name===name)||CROPS.at(-1)}function fmt(d){if(!d)return 'Date non renseignée';return new Date(d+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})}function today(){return new Date().toISOString().slice(0,10)}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
-function renderLegend(id){document.getElementById(id).innerHTML=Object.entries(FAMILIES).map(([k,v])=>`<span><i class="dot" style="background:${v.color}"></i>${v.label}</span>`).join('')}
-function render(){renderLegend('legend');renderLegend('rotationLegend');renderPlot();renderJournal();renderPlanning();renderHarvest();renderRotation()}
-function renderPlot(){const beds=Object.entries(state.beds);const filled=beds.filter(([,b])=>b.rows.length).length;document.getElementById('plotStats').innerHTML=`<div class="stat"><b>20</b><small>Planches</small></div><div class="stat"><b>${filled}</b><small>En culture</small></div><div class="stat"><b>${beds.reduce((n,[,b])=>n+b.rows.length,0)}</b><small>Lignes cultivées</small></div><div class="stat"><b>${state.planning.length}</b><small>À venir</small></div>`;document.getElementById('plot').innerHTML=beds.map(([id,b])=>`<article class="bed family-${b.family}" data-bed="${id}"><div class="bed-top"><span class="bed-name">${id}</span><span class="bed-meta">${b.length||5} m</span></div><div class="rows">${b.rows.map((r,i)=>{const c=crop(r.crop);return `<div class="row-chip"><span>${c.emoji} ${esc(c.name)}</span><i>L${i+1}</i></div>`}).join('')||'<div class="bed-empty">Planche libre · ajouter des lignes</div>'}</div></article>`).join('');document.querySelectorAll('[data-bed]').forEach(e=>e.onclick=()=>openBed(e.dataset.bed))}
-function cropOptions(sel=''){return CROPS.map(c=>`<option value="${esc(c.name)}" ${c.name===sel?'selected':''}>${c.emoji} ${esc(c.name)}</option>`).join('')}
-function bedOptions(sel=''){return Object.keys(state.beds).map(id=>`<option ${id===sel?'selected':''}>${id}</option>`).join('')}
-function openModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('modalBack').classList.add('open')}
-function closeModal(){document.getElementById('modalBack').classList.remove('open')}
-function openBed(id){editingBed=id;const b=state.beds[id];openModal(`<h3>${id} · détail de la planche</h3><div class="form-grid"><div class="field"><label>Famille de rotation</label><select id="bedFamily">${Object.entries(FAMILIES).map(([k,v])=>`<option value="${k}" ${k===b.family?'selected':''}>${v.label}</option>`).join('')}</select></div><div class="field"><label>Longueur (m)</label><input id="bedLength" type="number" min="1" step="0.5" value="${b.length||5}"></div><div class="field full"><label>Lignes cultivées (5 maximum)</label><div class="line-editor" id="lineEditor">${b.rows.map((r,i)=>lineHTML(r,i)).join('')}</div><button class="secondary add-line" id="addLine">＋ Ajouter une ligne</button></div></div><div class="modal-actions"><button class="secondary" id="cancel">Annuler</button><button class="primary" id="saveBed">Enregistrer</button></div>`);document.getElementById('cancel').onclick=closeModal;document.getElementById('addLine').onclick=()=>{const ed=document.getElementById('lineEditor');if(ed.children.length<5){ed.insertAdjacentHTML('beforeend',lineHTML({},ed.children.length));bindRemove()}else toast('5 lignes maximum');};bindRemove();document.getElementById('saveBed').onclick=()=>{state.beds[id].family=document.getElementById('bedFamily').value;state.beds[id].length=Number(document.getElementById('bedLength').value)||5;state.beds[id].rows=[...document.querySelectorAll('#lineEditor select')].map(s=>({crop:s.value}));save();closeModal();render();toast('Planche enregistrée')};}
-function lineHTML(r={},i){return `<div class="line-row"><span class="line-no">${i+1}</span><select>${cropOptions(r.crop)}</select><button class="remove-line" type="button" title="Supprimer">×</button></div>`}function bindRemove(){document.querySelectorAll('.remove-line').forEach(b=>b.onclick=()=>b.parentElement.remove())}
-function openEntry(type){const cfg={journal:['Nouveau semis / plantation','date de semis ou plantation'],planning:['Planifier une plantation','date prévue']}[type];openModal(`<h3>${cfg[0]}</h3><div class="form-grid"><div class="field"><label>Culture</label><select id="fCrop">${cropOptions()}</select></div><div class="field"><label>Planche</label><select id="fBed">${bedOptions()}</select></div><div class="field"><label>${cfg[1]}</label><input id="fDate" type="date" value="${today()}"></div><div class="field"><label>Ligne (facultatif)</label><input id="fLine" type="number" min="1" max="5" placeholder="ex. 2"></div><div class="field full"><label>Note</label><textarea id="fNote" rows="2" placeholder="Observations, variété, tâche…"></textarea></div></div><div class="modal-actions"><button class="secondary" id="cancel">Annuler</button><button class="primary" id="saveEntry">Ajouter</button></div>`);document.getElementById('cancel').onclick=closeModal;document.getElementById('saveEntry').onclick=()=>{state[type].push({id:crypto.randomUUID?.()||Date.now()+Math.random(),crop:document.getElementById('fCrop').value,bed:document.getElementById('fBed').value,date:document.getElementById('fDate').value,line:document.getElementById('fLine').value,note:document.getElementById('fNote').value});save();closeModal();render();toast('Entrée ajoutée')};}
-function renderJournal(){const el=document.getElementById('journalList'),a=[...state.journal].sort((x,y)=>(y.date||'').localeCompare(x.date||''));el.innerHTML=a.length?a.map(e=>entry(e,'journal')).join(''):'<div class="empty">Votre carnet est encore vierge.<br>Ajoutez votre premier semis ou plantation.</div>'}
-function renderPlanning(){const el=document.getElementById('planningList'),a=[...state.planning].sort((x,y)=>(x.date||'').localeCompare(y.date||''));el.innerHTML=a.length?a.map(e=>entry(e,'planning')).join(''):'<div class="empty">Aucune tâche planifiée pour le moment.</div>'}
-function entry(e,type){const c=crop(e.crop);return `<div class="card entry"><div class="entry-icon">${c.emoji}</div><div class="entry-main"><div class="entry-title">${esc(c.name)} <span class="pill">${esc(e.bed||'')}</span></div><div class="muted"><span class="${type==='planning'?'planning-date':''}">${fmt(e.date)}</span>${e.line?' · ligne '+esc(e.line):''}${e.note?' · '+esc(e.note):''}</div></div><div class="entry-actions"><button class="small-btn danger" onclick="remove('${type}','${e.id}')">Suppr.</button></div></div>`}
-function remove(type,id){state[type]=state[type].filter(x=>String(x.id)!==String(id));save();render();toast('Entrée supprimée')}
-function openHarvest(){openModal(`<h3>Enregistrer une récolte</h3><div class="form-grid"><div class="field"><label>Culture</label><select id="hCrop">${cropOptions()}</select></div><div class="field"><label>Planche</label><select id="hBed">${bedOptions()}</select></div><div class="field"><label>Date</label><input id="hDate" type="date" value="${today()}"></div><div class="field"><label>Quantité</label><div style="display:flex;gap:7px"><input id="hQty" type="number" min="0" step="0.1" placeholder="0"><select id="hUnit"><option>kg</option><option>g</option><option>pièces</option><option>paniers</option></select></div></div><div class="field full"><label>Note</label><textarea id="hNote" rows="2" placeholder="Qualité, variété, destination…"></textarea></div></div><div class="modal-actions"><button class="secondary" id="cancel">Annuler</button><button class="primary" id="saveHarvest">Enregistrer</button></div>`);document.getElementById('cancel').onclick=closeModal;document.getElementById('saveHarvest').onclick=()=>{state.harvest.push({id:crypto.randomUUID?.()||Date.now()+Math.random(),crop:document.getElementById('hCrop').value,bed:document.getElementById('hBed').value,date:document.getElementById('hDate').value,qty:document.getElementById('hQty').value,unit:document.getElementById('hUnit').value,note:document.getElementById('hNote').value});save();closeModal();render();toast('Récolte enregistrée')};}
-function renderHarvest(){const total=state.harvest.reduce((n,h)=>n+(Number(h.qty)||0),0);document.getElementById('harvestStats').innerHTML=`<div class="stat harvest-total"><b>${total.toLocaleString('fr-FR')}</b><small>Quantité totale saisie</small></div><div class="stat"><b>${state.harvest.length}</b><small>Récoltes</small></div>`;const el=document.getElementById('harvestList');const a=[...state.harvest].sort((x,y)=>(y.date||'').localeCompare(x.date||''));el.innerHTML=a.length?a.map(e=>`<div class="card entry"><div class="entry-icon">${crop(e.crop).emoji}</div><div class="entry-main"><div class="entry-title">${esc(e.crop)} <span class="pill">${esc(e.bed)}</span></div><div class="muted"><b>${esc(e.qty||'—')} ${esc(e.unit||'')}</b> · ${fmt(e.date)}${e.note?' · '+esc(e.note):''}</div></div><button class="small-btn danger" onclick="remove('harvest','${e.id}')">Suppr.</button></div>`).join(''):'<div class="empty">Aucune récolte enregistrée.</div>'}
-function renderRotation(){const years=new Set([new Date().getFullYear(),...state.journal.map(x=>x.date?.slice(0,4)),...state.planning.map(x=>x.date?.slice(0,4))].filter(Boolean));const ys=[...years].sort();let html='<table><thead><tr><th>Planche</th>'+ys.map(y=>`<th>${y}</th>`).join('')+'</tr></thead><tbody>';Object.entries(state.beds).forEach(([id,b])=>{html+=`<tr><td><b>${id}</b></td>`+ys.map(y=>{const rows=[...state.journal,...state.planning].filter(x=>x.bed===id&&x.date?.startsWith(y));const fam=rows.length?crop(rows[0].crop).family:b.family;return `<td>${rows.length?`<span class="cell-fam"><i class="dot" style="background:${FAMILIES[fam].color}"></i>${FAMILIES[fam].label}<br><small>${rows.map(x=>esc(x.crop)).join(', ')}</small></span>`:'<span class="muted">— libre</span>'}</td>`}).join('')+'</tr>'});document.getElementById('rotationView').innerHTML=html+'</tbody></table>'}
+<body>
+  <div class="app">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div>
+          <div class="eyebrow">Mon Potager</div>
+          <h1 class="brand">Planificateur</h1>
+        </div>
+        <nav class="nav">
+          <button id="parcelleBtn" class="active">Parcelle</button>
+          <button id="journalBtn">Journal</button>
+          <button id="planningBtn">Planning</button>
+          <button id="harvestBtn">Récoltes</button>
+        </nav>
+      </div>
+    </header>
 
-document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{screen=b.dataset.screen;document.querySelectorAll('.nav button,.screen').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('screen-'+screen).classList.add('active');render()});document.getElementById('journalBtn').onclick=()=>openEntry('journal');document.getElementById('planningBtn').onclick=()=>openEntry('planning');document.getElementById('harvestBtn').onclick=openHarvest;document.getElementById('addBedBtn').onclick=()=>openBed('P01');document.getElementById('modalBack').onclick=e=>{if(e.target.id==='modalBack')closeModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});document.getElementById('resetBtn').onclick=()=>{if(confirm('Effacer toutes les données du potager ?')){state=blank();save();render();toast('Potager réinitialisé')}};document.getElementById('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mon-potager-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Export téléchargé')};render();
-</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5"}' crossorigin="anonymous"></script>
-</body></html>
+    <!-- Main Content -->
+    <main>
+      <!-- Parcelle Section -->
+      <section id="screen-parcelle" class="screen active">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">La parcelle</h2>
+            <p class="section-copy">Affichage vertical · 5 lignes par planche. Touchez une planche pour la détailler.</p>
+          </div>
+          <button class="primary" id="addBedBtn">＋ Ajouter une culture</button>
+        </div>
+
+        <div class="stats" id="plotStats"></div>
+
+        <div class="legend" id="legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background: #a5c77a;"></div>
+            <span>Solanacées</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #805737;"></div>
+            <span>Cucurbitacées</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #21A345;"></div>
+            <span>Fabacées</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #701C9C;"></div>
+            <span>Divers</span>
+          </div>
+        </div>
+
+        <div class="plot" id="plot"></div>
+      </section>
+
+      <!-- Journal Section -->
+      <section id="screen-journal" class="screen">
+        <h2 class="section-title">Journal</h2>
+        <p class="section-copy">Historique des activités et observations.</p>
+        <button class="primary" id="addJournalBtn">＋ Ajouter une entrée</button>
+        <div id="journalList"></div>
+      </section>
+
+      <!-- Planning Section -->
+      <section id="screen-planning" class="screen">
+        <h2 class="section-title">Planning</h2>
+        <p class="section-copy">Tâches à venir et rappels.</p>
+        <button class="primary" id="addTaskBtn">＋ Ajouter une tâche</button>
+        <div id="planningList"></div>
+      </section>
+
+      <!-- Harvest Section -->
+      <section id="screen-harvest" class="screen">
+        <h2 class="section-title">Récoltes</h2>
+        <p class="section-copy">Suivi des récoltes par culture.</p>
+        <button class="primary" id="addHarvestBtn">＋ Ajouter une récolte</button>
+        <div id="harvestList"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Ajouter une culture</h3>
+        <button class="close-btn" id="modalBack">×</button>
+      </div>
+      <div id="modalBody">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // State management
+    let state = {
+      beds: Array.from({length: 18}, (_, i) => ({
+        id: `P${String(i + 1).padStart(2, '0')}`,
+        name: `Planche ${i + 1}`,
+        lines: []
+      })),
+      crops: [
+        {id: 'tomate', name: 'Tomate', family: 'Solanacées', color: '#a5c77a'},
+        {id: 'aubergine', name: 'Aubergine', family: 'Solanacées', color: '#a5c77a'},
+        {id: 'poivron', name: 'Poivron', family: 'Solanacées', color: '#a5c77a'},
+        {id: 'melon', name: 'Melon', family: 'Cucurbitacées', color: '#805737'},
+        {id: 'courge', name: 'Courge', family: 'Cucurbitacées', color: '#805737'},
+        {id: 'haricot', name: 'Haricot', family: 'Fabacées', color: '#23613e'},
+        {id: 'pois', name: 'Pois', family: 'Fabacées', color: '#21A345'},
+        {id: 'feve', name: 'Feve', family: 'Fabacées', color: '#21A345'},
+        {id: 'chou', name: 'Chou', family: 'Divers', color: '#701C9C'},
+        {id: 'carotte', name: 'Carotte', family: 'Divers', color: '#701C9C'},
+        {id: 'oignon', name: 'Oignon', family: 'Divers', color: '#701C9C'},
+        {id: 'ail', name: 'Ail', family: 'Divers', color: '#701C9C'},
+        {id: 'echalote', name: 'Echalote', family: 'Divers', color: '#701C9C'},
+        {id: 'poireau', name: 'Poireau', family: 'Divers', color: '#701C9C'},
+        {id: 'patate-douce', name: 'Patate douce', family: 'Divers', color: '#701C9C'},
+        {id: 'piment', name: 'Piment', family: 'Solanacées', color: '#a5c77a'}
+      ],
+      journal: [],
+      tasks: [],
+      harvests: []
+    };
+
+    // Blank state for reset
+    function blank() {
+      return {
+        beds: Array.from({length: 18}, (_, i) => ({
+          id: `P${String(i + 1).padStart(2, '0')}`,
+          name: `Planche ${i + 1}`,
+          lines: []
+        })),
+        crops: state.crops,
+        journal: [],
+        tasks: [],
+        harvests: []
+      };
+    }
+
+    // Save to localStorage
+    function save() {
+      localStorage.setItem('potagerState', JSON.stringify(state));
+    }
+
+    // Load from localStorage
+    function load() {
+      const saved = localStorage.getItem('potagerState');
+      if (saved) state = JSON.parse(saved);
+    }
+
+    // Render functions
+    function render() {
+      renderParcelle();
+      renderJournal();
+      renderPlanning();
+      renderHarvest();
+      renderStats();
+    }
+
+    function renderParcelle() {
+      const plotEl = document.getElementById('plot');
+      plotEl.innerHTML = '';
+
+      state.beds.forEach(bed => {
+        const bedEl = document.createElement('div');
+        bedEl.className = 'bed';
+        bedEl.dataset.id = bed.id;
+
+        const headerEl = document.createElement('div');
+        headerEl.className = 'bed-header';
+        headerEl.innerHTML = `
+          <div>
+            <div class="bed-title">${bed.name}</div>
+          </div>
+          <div class="bed-stats">
+            <span>${bed.lines.length} ligne${bed.lines.length > 1 ? 's' : ''}</span>
+          </div>
+        `;
+
+        const contentEl = document.createElement('div');
+        contentEl.className = 'bed-content';
+
+        bed.lines.forEach(line => {
+          const lineEl = document.createElement('div');
+          lineEl.className = 'line';
+
+          const crop = state.crops.find(c => c.id === line.crop);
+          const colorEl = document.createElement('div');
+          colorEl.className = 'crop-color';
+          colorEl.style.backgroundColor = crop.color;
+
+          lineEl.innerHTML = `
+            <span class="line-name">${line.name || 'Ligne'}</span>
+            <div class="line-crop">
+              ${colorEl.outerHTML}
+              <span>${crop.name}</span>
+            </div>
+          `;
+
+          contentEl.appendChild(lineEl);
+        });
+
+        bedEl.appendChild(headerEl);
+        bedEl.appendChild(contentEl);
+        plotEl.appendChild(bedEl);
+      });
+    }
+
+    function renderJournal() {
+      const listEl = document.getElementById('journalList');
+      listEl.innerHTML = state.journal.map(entry => `
+        <div class="journal-entry">
+          <div class="journal-header">
+            <div class="journal-date">${new Date(entry.date).toLocaleDateString('fr-FR')}</div>
+            <div class="journal-actions">
+              <button onclick="editJournal('${entry.id}')">Modifier</button>
+              <button onclick="deleteJournal('${entry.id}')">Supprimer</button>
+            </div>
+          </div>
+          <div class="journal-content">${entry.content}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderPlanning() {
+      const listEl = document.getElementById('planningList');
+      listEl.innerHTML = state.tasks.map(task => `
+        <div class="planning-day">
+          <div class="planning-header">
+            <div class="planning-date">${new Date(task.date).toLocaleDateString('fr-FR')}</div>
+            <button onclick="deleteTask('${task.id}')">×</button>
+          </div>
+          <div class="planning-tasks">
+            <div class="planning-task">${task.description}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderHarvest() {
+      const listEl = document.getElementById('harvestList');
+      listEl.innerHTML = state.harvests.map(harvest => {
+        const crop = state.crops.find(c => c.id === harvest.crop);
+        return `
+          <div class="harvest-item">
+            <div class="harvest-info">
+              <h4>${crop.name}</h4>
+              <div class="harvest-meta">
+                <span>${new Date(harvest.date).toLocaleDateString('fr-FR')}</span>
+                <span>${harvest.quantity} ${harvest.unit}</span>
+              </div>
+            </div>
+            <button onclick="deleteHarvest('${harvest.id}')">Supprimer</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderStats() {
+      const statsEl = document.getElementById('plotStats');
+      const totalLines = state.beds.reduce((sum, bed) => sum + bed.lines.length, 0);
+      statsEl.innerHTML = `
+        <p><strong>${state.beds.length}</strong> planches · <strong>${totalLines}</strong> lignes au total</p>
+      `;
+    }
+
+    // Modal functions
+    function openBed(bedId) {
+      const bed = state.beds.find(b => b.id === bedId);
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+
+      modalTitle.textContent = `Éditer ${bed.name}`;
+      modalBody.innerHTML = `
+        <div class="form-group">
+          <label class="form-label">Nom de la planche</label>
+          <input type="text" class="form-input" id="bedName" value="${bed.name}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lignes (max 5)</label>
+          <div id="bedLines"></div>
+        </div>
+        <div class="btn-group">
+          <button onclick="addLine('${bedId}')">+ Ajouter une ligne</button>
+          <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+          <button onclick="saveBed('${bedId}')">Enregistrer</button>
+        </div>
+      `;
+
+      renderBedLines(bedId);
+      document.getElementById('modal').classList.add('active');
+    }
+
+    function renderBedLines(bedId) {
+      const bed = state.beds.find(b => b.id === bedId);
+      const linesEl = document.getElementById('bedLines');
+      linesEl.innerHTML = bed.lines.map((line, index) => `
+        <div class="form-row" style="margin-bottom: 10px;">
+          <div class="form-group">
+            <input type="text" class="form-input" placeholder="Nom de la ligne" value="${line.name || ''}">
+          </div>
+          <div class="form-group">
+            <select class="form-select">
+              ${state.crops.map(crop => `
+                <option value="${crop.id}" ${line.crop === crop.id ? 'selected' : ''}>
+                  ${crop.name}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+          <button onclick="removeLine('${bedId}', ${index})" style="background: var(--red); align-self: flex-end;">×</button>
+        </div>
+      `).join('');
+    }
+
+    function addLine(bedId) {
+      const bed = state.beds.find(b => b.id === bedId);
+      if (bed.lines.length >= 5) return toast('Maximum 5 lignes par planche');
+
+      bed.lines.push({name: '', crop: state.crops[0].id});
+      renderBedLines(bedId);
+    }
+
+    function removeLine(bedId, index) {
+      const bed = state.beds.find(b => b.id === bedId);
+      bed.lines.splice(index, 1);
+      renderBedLines(bedId);
+    }
+
+    function saveBed(bedId) {
+      const bed = state.beds.find(b => b.id === bedId);
+      bed.name = document.getElementById('bedName').value;
+      bed.lines = Array.from(document.querySelectorAll('#bedLines .form-row')).map(row => ({
+        name: row.querySelector('input').value,
+        crop: row.querySelector('select').value
+      }));
+
+      save();
+      render();
+      closeModal();
+    }
+
+    function openEntry(type) {
+      // Implementation for journal/planning/harvest entries
+      // Similar pattern to openBed
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+
+    function toast(message) {
+      const toastEl = document.getElementById('toast');
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 3000);
+    }
+
+    // Initialize
+    load();
+    render();
+
+    // Event listeners
+    document.getElementById('parcelleBtn').onclick = () => {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-parcelle').classList.add('active');
+    };
+
+    document.getElementById('journalBtn').onclick = () => {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-journal').classList.add('active');
+    };
+
+    document.getElementById('planningBtn').onclick = () => {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-planning').classList.add('active');
+    };
+
+    document.getElementById('harvestBtn').onclick = () => {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-harvest').classList.add('active');
+    };
+
+    document.getElementById('addBedBtn').onclick = () => openBed('P01');
+    document.getElementById('modalBack').onclick = e => {
+      if (e.target.id === 'modalBack') closeModal();
+    };
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>
